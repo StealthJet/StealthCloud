@@ -1,6 +1,6 @@
 # StealthServer
 
-Github: https://github.com/StealthJet/StealthJetServer
+Github: https://github.com/StealthJet/StealthServer
 
 Npm: https://www.npmjs.com/package/stealthjet
 
