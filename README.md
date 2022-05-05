@@ -1,4 +1,4 @@
-# StealthJet
+# StealthServer
 
 Github: https://github.com/StealthJet/StealthJetServer
 
