@@ -1,6 +1,7 @@
 # StealthJet
 
 Github: https://github.com/StealthJet/StealthJetServer
+
 Npm: https://www.npmjs.com/package/stealthjet
 
 ## What is StealthJet?
@@ -11,7 +12,7 @@ StealthJet is a subscription first protocol that can be used to create platform 
 This is done by interfacing with black box servers, which are accessed through a UI that allows users to sort incoming and outgoing media and data. 
 
 
-StealthJet Server and StealthJet Dashboard are examples of black box servers and this type of UI.
+StealthServer and StealthJet Dashboard are examples of black box servers and this type of UI.
 
 ## Subscription First
 
@@ -39,7 +40,7 @@ We define black box servers as servers that are encrypted at rest and in transit
 This is accomplished by encrypting the messages on the client side before it arrives at the server. A public-key cryptography key exchange may also happen between the UI and the server to cloak any messages in transit. Public-key cryptographic keys are also exchanged between subscribers and content providers to ensure that they, and no one else, can decrypt the content the provide to each other. 
 
 
-StealthJet Server is an example of a black box server.
+StealthServer is an example of a black box server.
 
 ## Spam Prevention
 
@@ -117,7 +118,7 @@ The result should look something like this:
 
 To run the server locally
 ```
-node StealthJetServer.js
+node StealthServer.js
 ```
 
 To run on the cloud we reccomend following this tutorial: https://www.digitalocean.com/community/tutorials/how-to-set-up-a-node-js-application-for-production-on-ubuntu-16-04

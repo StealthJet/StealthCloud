@@ -179,6 +179,6 @@ server.get(`/`, async (req, res) => {
 
 const PORT = 8080;
 server.listen(PORT, function() {
-    console.log(`STEALTH JET in flight`)
+    console.log(`STEALTH JET IN FLIGHT`)
     console.log(`http://127.0.0.1:${PORT}/`)
 });
