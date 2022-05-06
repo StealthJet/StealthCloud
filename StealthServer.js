@@ -170,7 +170,7 @@ server.get(`/`, async (req, res) => {
             <div style="text-align: center; width: 100%; margin: 20px 0px;">
                 <a href="https://StealthJet.io"><img src="/images/StealthJetLogo.svg" width="200" style="margin:auto;"/></a>
                 <br/>
-                <a class='button' href="https://StealthJet.io/dashboard?ip=${ipAddress}">Connect</a>
+                <a class='button' href="http://StealthJet.io/dashboard?ip=${ipAddress}">Connect</a>
             </div>
         `
     })
