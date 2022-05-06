@@ -7,7 +7,7 @@ const fs = require('fs');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv').config({path:__dirname+'/.env'});
 const util = require('util');
-const ipAddress = Object.values(require('os').networkInterfaces()).reduce((r, list) => r.concat(list.reduce((rr, i) => rr.concat(i.family==='IPv4' && !i.internal && i.address || []), [])), [])
+const ipAddress = Object.values(require('os').networkInterfaces()).reduce((r, list) => r.concat(list.reduce((rr, i) => rr.concat(i.family==='IPv4' && !i.internal && i.address || []), [])), []).toString().split(',')[0]
 const readDir = util.promisify(fs.readdir);
 const readFile = util.promisify(fs.readFile);
 
