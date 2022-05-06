@@ -88,7 +88,7 @@ Then run
 authAPI.generateJSONWebTokenSecret()
 ```
 
-Copy the result without the surrounding single quotes and add it to the .env file.
+Copy the result without the surrounding single quotes and replace the default TOKEN_SECRET in the .env file.
 ```
 TOKEN_SECRET=(paste your token secret here)
 ```
@@ -105,7 +105,7 @@ With the authAPI still open, run the following
 authAPI.hashPasswordToJSON('your admin password goes here')
 ```
 
-Copy the result without the surrounding single quotes and paste it into the auth.JSON file. 
+Copy the result without the surrounding single quotes and replace the existing values in the auth.JSON file. 
 The result should look something like this:
 ```
 {
