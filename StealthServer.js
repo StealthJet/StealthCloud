@@ -7,7 +7,7 @@ const fs = require('fs');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv').config({path:__dirname+'/.env'});
 const util = require('util');
-const ipAddress = Object.values(require('os').networkInterfaces()).reduce((r, list) => r.concat(list.reduce((rr, i) => rr.concat(i.family==='IPv4' && !i.internal && i.address || []), [])), [])
+const ipAddress = Object.values(require('os').networkInterfaces()).reduce((r, list) => r.concat(list.reduce((rr, i) => rr.concat(i.family==='IPv4' && !i.internal && i.address || []), [])), []).toString().split(',')[0]
 const readDir = util.promisify(fs.readdir);
 const readFile = util.promisify(fs.readFile);
 
@@ -170,7 +170,7 @@ server.get(`/`, async (req, res) => {
             <div style="text-align: center; width: 100%; margin: 20px 0px;">
                 <a href="https://StealthJet.io"><img src="/images/StealthJetLogo.svg" width="200" style="margin:auto;"/></a>
                 <br/>
-                <a class='button' href="https://StealthJet.io/dashboard?ip=${ipAddress}">Connect</a>
+                <a class='button' href="http://StealthJet.io/dashboard?ip=${ipAddress}">Connect</a>
             </div>
         `
     })
