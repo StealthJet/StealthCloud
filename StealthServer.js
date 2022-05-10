@@ -59,8 +59,12 @@ const middleware = {
         const adminData = JSON.parse(adminJSON)
         const server_secret = decrypt(token, adminData.server_encryption_key)
         if (server_secret === "VkX1+kOSx++1BjjqMy9i875zT0tKNUEXHqAvQ"){
-            if(req?.body?.text){
-                req.body.text = decrypt(req.body.text, adminData.server_encryption_key)
+            if(req){
+                if(req.body){
+                    if(req.body.text){
+                        req.body.text = decrypt(req.body.text, adminData.server_encryption_key)
+                    }
+                }
             }
             next()
         } else { 
