@@ -7,6 +7,7 @@ const fs = require('fs');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv').config({path:__dirname+'/.env'});
 const util = require('util');
+const { encrypt, decrypt } = require('./CryptoJs');
 const ipAddress = Object.values(require('os').networkInterfaces()).reduce((r, list) => r.concat(list.reduce((rr, i) => rr.concat(i.family==='IPv4' && !i.internal && i.address || []), [])), []).toString().split(',')[0]
 const readDir = util.promisify(fs.readdir);
 const readFile = util.promisify(fs.readFile);
@@ -53,11 +54,22 @@ const middleware = {
         const authHeader = req.headers['authorization']
         const token = authHeader && authHeader.split(' ')[1]
         if (token == null) return res.send({err: "invalid token"})
-        jwt.verify(token, process.env.TOKEN_SECRET, (err, tokenData) => {
-            if (err) return res.send({err: "invalid token"})
-            req.tokenData = tokenData
+        const adminPath = `${__dirname}/${dataRoot}auth.json`
+        const adminJSON = await readFile(adminPath, 'utf8')
+        const adminData = JSON.parse(adminJSON)
+        const server_secret = decrypt(token, adminData.server_encryption_key)
+        if (server_secret === "VkX1+kOSx++1BjjqMy9i875zT0tKNUEXHqAvQ"){
+            if(req){
+                if(req.body){
+                    if(req.body.text){
+                        req.body.text = decrypt(req.body.text, adminData.server_encryption_key)
+                    }
+                }
+            }
             next()
-        })
+        } else { 
+            return res.send({err: "invalid token"}) 
+        }
     }
 }
 
@@ -95,20 +107,7 @@ server.post('/api/checkToken', middleware.authenticateToken, async (req, res) =>
 })
 
 server.post('/api/signin', async (req, res) => {
-    const { password } = req.body
-    const adminPath = `${__dirname}/${dataRoot}auth.json`
-    const adminJSON = await readFile(adminPath, 'utf8')
-    const adminData = JSON.parse(adminJSON)
-    const newHash = authAPI.hashPasswordWithSalt({password, salt: adminData.salt})
-    if(adminData.hash === newHash){
-        const expiresIn = 60 * 60 // 60 seconds * 60 min = 1 hour
-        const token = jwt.sign({user: 'admin'}, process.env.TOKEN_SECRET, { expiresIn });
-        const timestamp = new Date().getTime() + expiresIn
-        const expirationDate = new Date(timestamp).toUTCString()
-        res.send({token, expirationDate})
-    } else {
-        res.send({err: "invalid password"})
-    }
+    res.send({success: 'true'})
 })
 
 server.post('/api/create/:id', middleware.authenticateToken, async (req, res) => {
