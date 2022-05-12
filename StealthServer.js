@@ -65,19 +65,23 @@ const middleware = {
         const adminPath = `${__dirname}/${dataRoot}auth.json`
         const adminJSON = await readFile(adminPath, 'utf8')
         const adminData = JSON.parse(adminJSON)
-        const server_secret = decrypt(token, adminData[req.params.namespace])
-        if (server_secret === "VkX1+kOSx++1BjjqMy9i875zT0tKNUEXHqAvQ"){
-            const namespaceRoot = `${__dirname}/${dataRoot}data/${req.params.namespace}`
-            const namespaceRootExists = await exists(namespaceRoot)
-            if(!namespaceRootExists) await makeDir(namespaceRoot)
-            if(req){
-                if(req.body){
-                    if(req.body.text){
-                        req.body.text = decrypt(req.body.text, adminData[req.params.namespace])
+        if(adminData[req.params.namespace]){
+            const server_secret = decrypt(token, adminData[req.params.namespace])
+            if (server_secret === "VkX1+kOSx++1BjjqMy9i875zT0tKNUEXHqAvQ"){
+                const namespaceRoot = `${__dirname}/${dataRoot}data/${req.params.namespace}`
+                const namespaceRootExists = await exists(namespaceRoot)
+                if(!namespaceRootExists) await makeDir(namespaceRoot)
+                if(req){
+                    if(req.body){
+                        if(req.body.text){
+                            req.body.text = decrypt(req.body.text, adminData[req.params.namespace])
+                        }
                     }
                 }
+                next()
+            } else {
+                return res.send({err: "invalid token"}) 
             }
-            next()
         } else { 
             return res.send({err: "invalid token"}) 
         }
@@ -117,7 +121,7 @@ server.post('/:namespace/checkToken', middleware.authenticateToken, async (req, 
     res.send({success: 'true'})
 })
 
-server.post('/:namespace/signin', async (req, res) => {
+server.post('/:namespace/signin', middleware.authenticateToken, async (req, res) => {
     res.send({success: 'true'})
 })
 
