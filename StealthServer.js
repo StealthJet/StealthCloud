@@ -62,26 +62,24 @@ const middleware = {
         const authHeader = req.headers['authorization']
         const token = authHeader && authHeader.split(' ')[1]
         if (token == null) return res.send({err: "invalid token"})
-        if(req.params.namespace === 'api'){
-            const adminPath = `${__dirname}/${dataRoot}auth.json`
-            const adminJSON = await readFile(adminPath, 'utf8')
-            const adminData = JSON.parse(adminJSON)
-            const server_secret = decrypt(token, adminData[req.params.namespace])
-            if (server_secret === "VkX1+kOSx++1BjjqMy9i875zT0tKNUEXHqAvQ"){
-                const namespaceRoot = `${__dirname}/${dataRoot}data/${req.params.namespace}`
-                const namespaceRootExists = await exists(namespaceRoot)
-                if(!namespaceRootExists) await makeDir(namespaceRoot)
-                if(req){
-                    if(req.body){
-                        if(req.body.text){
-                            req.body.text = decrypt(req.body.text, adminData[req.params.namespace])
-                        }
+        const adminPath = `${__dirname}/${dataRoot}auth.json`
+        const adminJSON = await readFile(adminPath, 'utf8')
+        const adminData = JSON.parse(adminJSON)
+        const server_secret = decrypt(token, adminData[req.params.namespace])
+        if (server_secret === "VkX1+kOSx++1BjjqMy9i875zT0tKNUEXHqAvQ"){
+            const namespaceRoot = `${__dirname}/${dataRoot}data/${req.params.namespace}`
+            const namespaceRootExists = await exists(namespaceRoot)
+            if(!namespaceRootExists) await makeDir(namespaceRoot)
+            if(req){
+                if(req.body){
+                    if(req.body.text){
+                        req.body.text = decrypt(req.body.text, adminData[req.params.namespace])
                     }
                 }
-                next()
-            } else { 
-                return res.send({err: "invalid token"}) 
             }
+            next()
+        } else { 
+            return res.send({err: "invalid token"}) 
         }
     }
 }
