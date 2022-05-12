@@ -10,7 +10,11 @@ const util = require('util');
 const { encrypt, decrypt } = require('./CryptoJs');
 const ipAddress = Object.values(require('os').networkInterfaces()).reduce((r, list) => r.concat(list.reduce((rr, i) => rr.concat(i.family==='IPv4' && !i.internal && i.address || []), [])), []).toString().split(',')[0]
 const readDir = util.promisify(fs.readdir);
+const makeDir = util.promisify(fs.mkdir);
 const readFile = util.promisify(fs.readFile);
+const writeFile = util.promisify(fs.writeFile);
+const deleteFile = util.promisify(fs.unlink);
+const exists = util.promisify(fs.exists);
 
 const crypto = require('crypto');
 const authAPI = {
@@ -29,14 +33,18 @@ async function readJSON(jsonFile){
     const data = JSON.parse(json)
     return data
 }
-const writeFile = util.promisify(fs.writeFile);
-const deleteFile = util.promisify(fs.unlink);
-const exists = util.promisify(fs.exists);
+
 const server = express();
 const uploadPath = './data';
 const staticPath = __dirname + '/public';
 const upload = multer({ dest: uploadPath })
 const dataRoot = ``
+const dataPath = `${__dirname}/${dataRoot}data`
+async function loadDataPath(){
+    const dataPathExists = await exists(dataPath)
+    if(!dataPathExists) await makeDir(dataPath)
+}
+loadDataPath()
 
 server.use(bodyParser.json());
 server.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
@@ -54,21 +62,26 @@ const middleware = {
         const authHeader = req.headers['authorization']
         const token = authHeader && authHeader.split(' ')[1]
         if (token == null) return res.send({err: "invalid token"})
-        const adminPath = `${__dirname}/${dataRoot}auth.json`
-        const adminJSON = await readFile(adminPath, 'utf8')
-        const adminData = JSON.parse(adminJSON)
-        const server_secret = decrypt(token, adminData.server_encryption_key)
-        if (server_secret === "VkX1+kOSx++1BjjqMy9i875zT0tKNUEXHqAvQ"){
-            if(req){
-                if(req.body){
-                    if(req.body.text){
-                        req.body.text = decrypt(req.body.text, adminData.server_encryption_key)
+        if(req.params.namespace === 'api'){
+            const adminPath = `${__dirname}/${dataRoot}auth.json`
+            const adminJSON = await readFile(adminPath, 'utf8')
+            const adminData = JSON.parse(adminJSON)
+            const server_secret = decrypt(token, adminData[req.params.namespace])
+            if (server_secret === "VkX1+kOSx++1BjjqMy9i875zT0tKNUEXHqAvQ"){
+                const namespaceRoot = `${__dirname}/${dataRoot}data/${req.params.namespace}`
+                const namespaceRootExists = await exists(namespaceRoot)
+                if(!namespaceRootExists) await makeDir(namespaceRoot)
+                if(req){
+                    if(req.body){
+                        if(req.body.text){
+                            req.body.text = decrypt(req.body.text, adminData[req.params.namespace])
+                        }
                     }
                 }
+                next()
+            } else { 
+                return res.send({err: "invalid token"}) 
             }
-            next()
-        } else { 
-            return res.send({err: "invalid token"}) 
         }
     }
 }
@@ -102,17 +115,17 @@ server.get('/salt', async (req, res) => {
     res.send(template)
 })
 
-server.post('/api/checkToken', middleware.authenticateToken, async (req, res) => {
+server.post('/:namespace/checkToken', middleware.authenticateToken, async (req, res) => {
     res.send({success: 'true'})
 })
 
-server.post('/api/signin', async (req, res) => {
+server.post('/:namespace/signin', async (req, res) => {
     res.send({success: 'true'})
 })
 
-server.post('/api/create/:id', middleware.authenticateToken, async (req, res) => {
-    const { id } = req.params
-    const fileLocation = `${__dirname}/${dataRoot}data/${id}`
+server.post('/:namespace/create/:id', middleware.authenticateToken, async (req, res) => {
+    const { id, namespace } = req.params
+    const fileLocation = `${__dirname}/${dataRoot}data/${namespace}/${id}`
     const fileExists = await exists(fileLocation)
     if(fileExists){
         res.send('File already exists');
@@ -122,9 +135,9 @@ server.post('/api/create/:id', middleware.authenticateToken, async (req, res) =>
     }
 })
 
-server.post('/api/read/:id', middleware.authenticateToken, async (req, res) => {
-    const { id } = req.params
-    const fileLocation = `${__dirname}/${dataRoot}data/${id}`
+server.post('/:namespace/read/:id', middleware.authenticateToken, async (req, res) => {
+    const { id, namespace } = req.params
+    const fileLocation = `${__dirname}/${dataRoot}data/${namespace}/${id}`
     const fileExists = await exists(fileLocation)
     if(fileExists){
         const file = await readFile(fileLocation, 'utf8')
@@ -134,9 +147,9 @@ server.post('/api/read/:id', middleware.authenticateToken, async (req, res) => {
     }
 })
 
-server.post('/api/update/:id', middleware.authenticateToken, async (req, res) => {
-    const { id } = req.params
-    const fileLocation = `${__dirname}/${dataRoot}data/${id}`
+server.post('/:namespace/update/:id', middleware.authenticateToken, async (req, res) => {
+    const { id, namespace } = req.params
+    const fileLocation = `${__dirname}/${dataRoot}data/${namespace}/${id}`
     const fileExists = await exists(fileLocation)
     if(fileExists){
         await writeFile(fileLocation, req.body.text, 'utf8')
@@ -146,9 +159,9 @@ server.post('/api/update/:id', middleware.authenticateToken, async (req, res) =>
     }
 })
 
-server.post('/api/delete/:id', middleware.authenticateToken, async (req, res) => {
-    const { id } = req.params
-    const fileLocation = `${__dirname}/${dataRoot}data/${id}`
+server.post('/:namespace/delete/:id', middleware.authenticateToken, async (req, res) => {
+    const { id, namespace } = req.params
+    const fileLocation = `${__dirname}/${dataRoot}data/${namespace}/${id}`
     const fileExists = await exists(fileLocation)
     if(fileExists){
         await deleteFile(fileLocation)
@@ -158,8 +171,9 @@ server.post('/api/delete/:id', middleware.authenticateToken, async (req, res) =>
     }
 })
 
-server.get('/api/ids', middleware.authenticateToken, async (req, res) => {
-    const ids = await readDir(`${__dirname}/${dataRoot}data`)
+server.get('/:namespace/ids', middleware.authenticateToken, async (req, res) => {
+    const { namespace } = req.params
+    const ids = await readDir(`${__dirname}/${dataRoot}data/${namespace}`)
     res.send(ids)
 })
 
