@@ -59,15 +59,16 @@ npm install
 ```
 
 
-You will need to create a server encryption key in the auth.JSON
+You will need to create a server key in the auth.JSON
 
 ## auth.JSON
 
-Change the server_encryption_key to a passphrase that you will remember. You will need to remember this anytime you want to connect to the Stealth Server.
+The default server key has a namespace of "api".  
+Change it's value to a passphrase that you will remember. You will need to remember this anytime you want to connect to the Stealth Server.
 
 ```
 {
-    "server_encryption_key": "(paste a new passphrase here)"
+    "api": "(paste a new passphrase here)"
 }
 ```
 
