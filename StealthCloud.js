@@ -183,10 +183,9 @@ server.get(`/`, async (req, res) => {
     const template = await templateAPI.loadTemplate('fullscreen',{
         main: `
             <div style="text-align: center; width: 100%; margin: 20px 0px;">
-                <a href="https://StealthJet.io"><img src="/images/StealthJetLogo.svg" width="200" style="margin:auto;"/></a>
+                <a href="https://StealthJet.io"><img src="/images/StealthCloud.svg" width="200" style="margin:auto;"/></a>
                 <br/>
-                <a class='button' href="http://StealthJet.io/dashboard?ip=${ipAddress}">Remote Connect</a>
-                <a class='button' href="http://StealthJet.io/dashboard?ip=localhost:8080">Local Connect</a>
+                <a class='button' href="https://github.com/StealthJet/StealthJet">Unlock</a>
             </div>
         `
     })
@@ -195,6 +194,6 @@ server.get(`/`, async (req, res) => {
 
 const PORT = 8080;
 server.listen(PORT, function() {
-    console.log(`☁ STEALTH CLOUD IS IN THE SKY ☁`)
+    console.log(`☁ STEALTHCLOUD IS IN THE SKY ☁`)
     console.log(`☁ ☁ http://127.0.0.1:${PORT}/ ☁ ☁`)
 });
