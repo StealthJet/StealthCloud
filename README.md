@@ -1,8 +1,6 @@
-# StealthServer
+# StealthCloud
 
-Github: https://github.com/StealthJet/StealthServer
-
-Npm: https://www.npmjs.com/package/stealthjet
+Github: https://github.com/StealthJet/StealthCloud
 
 ## What is StealthJet?
 
@@ -12,14 +10,14 @@ StealthJet is a subscription first protocol that can be used to create platform 
 This is done by interfacing with black box servers, which are accessed through a UI that allows users to sort incoming and outgoing media and data. 
 
 
-StealthServer and StealthJet Dashboard are examples of black box servers and this type of UI.
+StealthCloud and StealthJet are examples of black box servers and this type of UI.
 
 ## Subscription First
 
 In the traditional web, if a website goes down, users have no way of continuing to access the content provider's content unless they had previously provided another form of contact, such as an email or phone number, or are subscribed on another platform.
 
 
-In subscription first, the user provides their contact method first, such as an auth token of a server running StealthJet Server, which allows the content provider to continue to provide content to them regardless if their website, or social media platforms are available. 
+In subscription first, the user provides their contact method first, such as an auth token of a server running StealthCloud, which allows the content provider to continue to provide content to them regardless if their website, or social media platforms are available. 
 
 
 ## Platform Independent Social Media
@@ -30,7 +28,7 @@ Similarly, as long as a subscriber provides up to date auth tokens to their cont
 
 In this way the social media experience is platform independent.
 
-StealthJet Dashboard is an example of a UI capable of displaying black box content as a social media experience.
+StealthJet is an example of a UI capable of displaying black box content as a social media experience.
 
 ## Black Box Servers
 
@@ -40,7 +38,7 @@ We define black box servers as servers that are encrypted at rest and in transit
 This is accomplished by encrypting the messages on the client side before it arrives at the server. A public-key cryptography key exchange may also happen between the UI and the server to cloak any messages in transit. Public-key cryptographic keys are also exchanged between subscribers and content providers to ensure that they, and no one else, can decrypt the content the provide to each other. 
 
 
-StealthServer is an example of a black box server.
+StealthCloud is an example of a black box server.
 
 ## Spam Prevention
 
@@ -51,7 +49,7 @@ By providing a black box server auth token, which is like a username and passwor
 This quickly prevents spam.
 
 
-## Installing StealthJet Server
+## Installing StealthCloud
 
 To install run 
 ```
@@ -64,7 +62,7 @@ You will need to create a server key in the auth.JSON
 ## auth.JSON
 
 The default server key has a namespace of "api".  
-Change it's value to a passphrase that you will remember. You will need to remember this anytime you want to connect to the Stealth Server.
+Change it's value to a passphrase that you will remember. You will need to remember this anytime you want to connect to the StealthCloud.
 
 ```
 {
@@ -76,7 +74,7 @@ Change it's value to a passphrase that you will remember. You will need to remem
 
 To run the server locally
 ```
-node StealthServer.js
+node StealthCloud.js
 ```
 
 To run on the cloud we reccomend following this tutorial: https://www.digitalocean.com/community/tutorials/how-to-set-up-a-node-js-application-for-production-on-ubuntu-16-04

@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "server": "node StealthServer.js"
+    "server": "node StealthCloud.js",
+    "cloud": "node StealthCloud.js"
   },
   "dependencies": {
     "body-parser": "^1.20.0",
